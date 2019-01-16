@@ -58,8 +58,8 @@ export default {
     }
     return {
       loginForm: {
-        username: 'admin',
-        password: 'admin123'
+        username: '',
+        password: ''
       },
       loginRules: {
         username: [{ required: true, trigger: 'blur' }],
@@ -78,6 +78,7 @@ export default {
       immediate: true
     }
   },
+
   methods: {
     showPwd() {
       if (this.pwdType === 'password') {
@@ -96,7 +97,9 @@ export default {
               window.sessionStorage.setItem('userId', result.userId)
               window.sessionStorage.setItem('communityId', result.communityId)
               window.sessionStorage.setItem('communityName', result.communityName)
-              this.$router.push({ path: this.redirect || '/dashboard' })
+              this.$router.push({ path: this.redirect || '/assets/index' })
+            } else {
+              this.$message.error(result.msg)
             }
           }).catch(() => {
             this.loading = false

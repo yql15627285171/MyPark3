@@ -17,17 +17,18 @@ export function login(username, password) {
   })
 }
 
-export function getInfo(token) {
+// 获取所有的菜单（暂时）
+export function getAllMenuList() {
   return request({
-    url: '/user/info',
-    method: 'get',
-    params: { token }
+    url: '/menu/getAllMenuList',
+    method: 'get'
   })
 }
 
-export function logout() {
+export function logout(query) {
   return request({
-    url: '/user/logout',
-    method: 'post'
+    url: '/sysuser/logout',
+    method: 'get',
+    params: query
   })
 }

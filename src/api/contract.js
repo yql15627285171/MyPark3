@@ -63,10 +63,11 @@ export function getCostPlanCondition(query) {
 }
 
 // 收费方案类型列表
-export function listCostType() {
+export function listCostType(query) {
   return request({
     url: '/basecostplan/ListCostType',
-    method: 'get'
+    method: 'get',
+    params: query
   })
 }
 
@@ -110,6 +111,42 @@ export function getPropertyLeasingContract(query) {
 export function updataStart(query) {
   return request({
     url: '/basepropertyleasingcontract/updataStart',
+    method: 'get',
+    params: query
+  })
+}
+
+// 获取房间资产
+export function getHouses(query) {
+  return request({
+    url: '/basepropertyleasingcontract/getHouses',
+    method: 'get',
+    params: query
+  })
+}
+
+// 根据费用类别选择方案
+export function getCoTyPL(query) {
+  return request({
+    url: '/basecostplan/getCoTyPL',
+    method: 'get',
+    params: query
+  })
+}
+
+// 根据房间和收费类型选择设备列表
+export function getHouAss(query) {
+  return request({
+    url: '/basepropertyleasingcontract/getHouAss',
+    method: 'post',
+    data: query
+  })
+}
+
+// 保存合同技术方案
+export function saveRentlInt(query) {
+  return request({
+    url: '/basepropertyleasingcontract/saveRentlInt',
     method: 'post',
     data: query
   })

@@ -498,7 +498,10 @@ export default {
 
     // 获取收费方案类型列表
     listCostType: function() {
-      listCostType().then(result => {
+      var params = {
+        communityId: window.sessionStorage.getItem('communityId')
+      }
+      listCostType(params).then(result => {
         if (result.msg === 'success') {
           this.categoryOptions = result.page
         }

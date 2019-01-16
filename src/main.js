@@ -14,8 +14,12 @@ import store from './store'
 
 import '@/icons' // icon
 // import '@/permission' // permission control
+import '@/myPermission'
 
 Vue.use(ElementUI)
+
+// IE对promise的支持不好
+import 'babel-polyfill'
 
 Vue.config.productionTip = false
 

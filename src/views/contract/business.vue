@@ -393,4 +393,15 @@ export default {
     text-align: center;
   }
 
+  .condition{
+
+    .el-button{
+      margin-left: 20px;
+    }
+
+    .el-input{
+      width: 250px;
+    }
+  }
+
 </style>

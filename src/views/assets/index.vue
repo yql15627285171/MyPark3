@@ -66,7 +66,7 @@
 
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button>取消</el-button>
+        <el-button @click="deviceDialogVisible=false">取消</el-button>
         <el-button :disabled="sureBtnDisabled" type="primary" @click="submitFormData">确定</el-button>
       </div>
     </el-dialog>
@@ -97,7 +97,7 @@
 
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button >重置</el-button>
+        <el-button @click="houseDialogVisible=false">取消</el-button>
         <el-button type="primary" @click="submitFormData">确认</el-button>
       </div>
     </el-dialog>
@@ -157,8 +157,8 @@
 </template>
 
 <script>
-import Pagination from '@/components/Pagination' // Secondary package based on el-pagination
-
+import Pagination from '@/components/Pagination'
+import { getAllMenuList } from '@/api/login'
 import {
   getPageList,
   enableDevice,
@@ -188,7 +188,7 @@ export default {
       messageName: [
         {
           label: '资产类别',
-          name: 'm_type'
+          name: 'assetsClass'
         },
         {
           label: '资产名称',
@@ -196,7 +196,7 @@ export default {
         },
         {
           label: '资产型号',
-          name: 'assetsModel'
+          name: 'deviceMode'
         },
         {
           label: '资产编号',
@@ -250,6 +250,10 @@ export default {
   },
   created() {
     this.getList()
+
+    getAllMenuList().then(result => {
+      console.log(result)
+    })
   },
   methods: {
     // 设置表格
@@ -294,8 +298,6 @@ export default {
     },
 
     getList() {
-      // console.log(this.listQuery)
-      this.message = []
       var params = {
         userId: window.sessionStorage.getItem('userId'),
         assetsCode: this.queryName,
@@ -307,7 +309,7 @@ export default {
 
       getPageList(params).then(result => {
         this.loading = false
-        console.log(result)
+        // console.log(result)
         if (result.msg === 'success') {
           this.message = result.page
           this.message.forEach(function(item, index, array) {
@@ -328,7 +330,7 @@ export default {
       this.deviceDialogVisible = true
       this.operationType = 'addDevice'
       this.deviceDataForm.id = ''// 获取对应楼街栋列表
-      this.getBuildingList()
+      this.getBuildingList() // 重新获取栋街层列表
     },
 
     // 点击新增房间按钮
@@ -365,7 +367,7 @@ export default {
         return
       }
       this.houseDialogVisible = false
-      console.log(this.houseDataForm)
+      // console.log(this.houseDataForm)
       this.loading = true
       postCommHouseInfo(this.houseDataForm).then(result => {
         this.loading = false
@@ -375,6 +377,8 @@ export default {
         } else {
           this.$message.error(result.msg)
         }
+      }).catch(_ => {
+        this.loading = false
       })
     },
 
@@ -409,7 +413,11 @@ export default {
       }
       this.loading = true
       this.deviceDialogVisible = false
-      this.deviceDataForm.assesInfo = this.deviceDataForm.installAddress
+      var houseItem = this.houses.find(element => {
+        return element.id === this.deviceDataForm.houseId
+      })
+      this.deviceDataForm.assetsInfo = `安装地址：${this.deviceDataForm.installAddress}-
+      ${this.deviceDataForm.building}${houseItem.houseNo}`
 
       saveMeterInfo(this.deviceDataForm).then(result => {
         this.loading = false
@@ -419,10 +427,12 @@ export default {
         } else {
           this.$message.error(result.msg)
         }
+      }).catch(_ => {
+        this.loading = false
       })
     },
 
-    // 删除资产
+    // 点击删除按钮 删除资产
     deleteAssets: function(data) {
       this.$confirm('此操作将永久删除该档案, 是否继续?', '提示', {
         confirmButtonText: '确定',
@@ -431,7 +441,7 @@ export default {
       }).then(() => {
         // 点击确定data
         // 判断是删除房间还是删除设备
-        if (data.m_type === '房地产业') {
+        if (data.assetsClass === '房地产业') {
           // 删除房间
           this.deleteCommHouseInfo(data)
         } else {
@@ -483,7 +493,7 @@ export default {
 
     // 修改按钮本点击
     updateBtnClick: function(data) {
-      if (data.m_type === '房地产业') {
+      if (data.assetsClass === '房地产业') {
         this.operationType = 'updateHouse'
         this.houseDataForm.building = data.building
         this.houseDataForm.meterId = parseInt(data.id)
@@ -505,6 +515,7 @@ export default {
         this.deviceDataForm.installAddress = data.installAddress
         this.deviceDataForm.assesInfo = data.assesInfo
         this.deviceDataForm.remark = data.remark
+
         this.enableDevice()
         this.getBuildingList()
         this.getHouseByBuilding()
@@ -525,7 +536,10 @@ export default {
       }
       this.loading = true
       this.deviceDialogVisible = false
-      this.deviceDataForm.assesInfo = this.deviceDataForm.installAddress
+      var houseItem = this.houses.find(element => {
+        return element.id === this.deviceDataForm.houseId
+      })
+      this.deviceDataForm.assetsInfo = `安装地址：${this.deviceDataForm.installAddress}-${this.deviceDataForm.building}${houseItem.houseNo}`
 
       updateMeterInfo(this.deviceDataForm).then(result => {
         this.loading = false
@@ -535,6 +549,8 @@ export default {
         } else {
           this.$message.error(result.msg)
         }
+      }).catch(_ => {
+        this.loading = false
       })
     },
 
@@ -560,6 +576,8 @@ export default {
         } else {
           this.$message.error(result.msg)
         }
+      }).catch(_ => {
+        this.loading = false
       })
     }
 

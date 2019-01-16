@@ -20,10 +20,23 @@
         border
         style="width: 100%">
 
+        <el-table-column type="expand">
+          <template slot-scope="props">
+            <el-form label-position="left" inline class="demo-table-expand" >
+              <el-form-item
+                v-for="(item,index) in messageName"
+                v-if="index<=3"
+                :label="item.label"
+                :key="index">
+                <span>{{ props.row[item.name] }}</span>
+              </el-form-item>
+            </el-form>
+          </template>
+        </el-table-column>
+
         <el-table-column
           type="selection"
           width="55"/>
-
         <el-table-column
           label="序号"
           type="index"
@@ -31,6 +44,7 @@
 
         <el-table-column
           v-for="(item,index) in messageName"
+          v-if="index>3"
           :key="index"
           :prop="item.name"
           :label="item.label"
@@ -54,7 +68,8 @@
               v-if="scope.row.start == '未启用'"
               type="text"
               size="small"
-              style="color: #409EFF">
+              style="color: #409EFF"
+              @click="updataStart(scope.row)">
               <i class="el-icon-edit"/>
               启用
             </el-button>
@@ -96,18 +111,19 @@
     </div>
 
     <!--新增合同-->
-    <el-dialog :visible.sync="addDialogVisible" title="添加/修改 甲方模板">
+    <el-dialog :visible.sync="addDialogVisible" :title="addTitle">
       <el-steps :active="active" finish-status="success">
         <el-step title="步骤1" description="制定甲方信息"/>
         <el-step title="步骤2" description="制定乙方信息"/>
         <el-step title="步骤3" description="制定技术方案"/>
       </el-steps>
-      <first-step v-if="active == 0" :data-form="dataForm1"/>
-      <second-step v-if="active == 1" :data-form="dataForm2"/>
-      <third-step v-if="active == 2" :house-options="houseOptions" :data-form="dataForm3"/>
+      <first-step v-show="active == 0" :data-form="dataForm1"/>
+      <second-step v-show="active == 1" :data-form="dataForm2"/>
+      <third-step v-show="active == 2" :data-form="dataForm3"/>
       <div slot="footer" class="dialog-footer">
         <el-button type="warning" @click="lastStep">上一步</el-button>
-        <el-button type="primary" @click="nextStep">下一步</el-button>
+        <el-button v-if="active!==2" type="primary" @click="nextStep">下一步</el-button>
+        <el-button v-else type="primary" @click="saveRentlInt">完成</el-button>
       </div>
     </el-dialog>
   </div>
@@ -122,8 +138,11 @@ import {
   getPropertyLeasingContract,
   savePropertyLeasingContract,
   savePLCYi,
-  deletePropertyLeasingContract } from '@/api/contract'
+  deletePropertyLeasingContract,
+  saveRentlInt,
+  updataStart } from '@/api/contract'
 import { getContractStatus } from '@/utils/meaning'
+import { yearAndMonthAndDay } from '@/utils/time'
 export default {
   name: 'Contract',
   components: { SecondStep, FirstStep, Pagination, ThirdStep },
@@ -132,22 +151,25 @@ export default {
       loading: false,
       queryName: '',
       addDialogVisible: false,
+      addTitle: '添加/修改 甲方模板',
       active: 0, // 活跃的步骤条
-      message: [
-        {
-          start: '启用'
-        },
-        {
-          start: '未启用'
-        },
-        {
-          start: '未完成'
-        }
-      ],
+      message: [],
       messageName: [
         {
           label: '合同编码',
           name: 'contractNumber'
+        },
+        {
+          label: '租赁面积(㎡)',
+          name: 'targetArea'
+        },
+        {
+          label: '起始日期',
+          name: 'startTime'
+        },
+        {
+          label: '截止日期',
+          name: 'endTime'
         },
         {
           label: '合同名称',
@@ -170,20 +192,8 @@ export default {
           name: 'contactInformationYi'
         },
         {
-          label: '租赁面积(㎡)',
-          name: 'targetArea'
-        },
-        {
-          label: '起始日期',
-          name: 'startTime'
-        },
-        {
-          label: '截止日期',
-          name: 'endTime'
-        },
-        {
           label: '有效天数',
-          name: 'effectiveDays'
+          name: 'reTime'
         },
         {
           label: '合同状态',
@@ -231,10 +241,10 @@ export default {
       }, // 乙方
       dataForm3: {
         id: '', // 合同id
+        startAndEndtime: [], // 起止时间
         rentInfo: [
           {
             house: '', // 房间
-            startAndEndtime: [], // 起止时间
             rentMoney: '', // 月租金
             formYears: '', // 递增基时
             circle: '', // 递增周期
@@ -248,18 +258,30 @@ export default {
             chargingPlan: ''
           }
         ]
-      }, // 技术方案信息
-      houseOptions: [
-        {
-          value: '333',
-          label: '333'
-        }
-      ]
+      } // 技术方案信息
+    }
+  },
+
+  watch: {
+    addDialogVisible: function(newValue) {
+      if (newValue === false) {
+        this.getList()
+      }
+    },
+    active: function(newValue) {
+      if (newValue === 0) {
+        this.addTitle = '添加/修改 甲方模板'
+      } else if (newValue === 1) {
+        this.addTitle = '添加/修改 乙方模板'
+      } else if (newValue === 2) {
+        this.addTitle = '制定技术方案'
+      }
     }
   },
   created() {
     this.getList()
   },
+
   methods: {
     // 设置表格
     tableHeadStyle: function({ row, column, rowIndex, columnIndex }) {
@@ -267,7 +289,7 @@ export default {
     },
     // 表格体
     tableRowStyle: function({ row, column, rowIndex, columnIndex }) {
-      return 'padding:3px;'
+      return 'padding:2px;;text-align:center'
     },
 
     addBtnClick: function() {
@@ -302,6 +324,26 @@ export default {
         } else {
           this.active = 2
         }
+        this.dataForm3 = {
+          id: '', // 合同id
+          startAndEndtime: [], // 起止时间
+          rentInfo: [
+            {
+              house: '', // 房间
+              rentMoney: '', // 月租金
+              formYears: '', // 递增基时
+              circle: '', // 递增周期
+              rate: ''// 递增比例
+            }
+          ],
+          chargingInfo: [
+            {
+              chargingPrograme: '',
+              deviceNums: [],
+              chargingPlan: ''
+            }
+          ]
+        }
         this.addDialogVisible = true
       }
     },
@@ -313,14 +355,10 @@ export default {
       // console.log(this.dataForm1)
       if (this.active === 0) {
         // 添加物业合同
-        // this.active++
         this.savePropertyLeasingContract()
       } else if (this.active === 1) {
         // 更新物业合同
-        // this.active++
         this.savePLCYi()
-      } else if (this.active === 2) {
-        // 增加技术合同
       }
     },
     /**
@@ -333,7 +371,6 @@ export default {
     },
     // 查询物业合同
     getList: function() {
-      this.message = []
       var params = {
         communityId: window.sessionStorage.getItem('communityId'),
         proSeachAll: this.queryName,
@@ -409,6 +446,22 @@ export default {
     },
 
     // 第三步 增加技术合同
+    saveRentlInt: function() {
+      var params = {
+        proId: this.dataForm2.id,
+        startTime: yearAndMonthAndDay(this.dataForm3.startAndEndtime[0]),
+        endTime: yearAndMonthAndDay(this.dataForm3.startAndEndtime[1]),
+        housesInfo: this.dataForm3.rentInfo,
+        rentInfo: this.dataForm3.chargingInfo
+      }
+      saveRentlInt(params).then(result => {
+        console.log(result)
+        if (result.msg === 'success') {
+          this.$message.success('添加成功')
+          this.addDialogVisible = false
+        }
+      })
+    },
 
     // 删除合同
     deletePropertyLeasingContract: function(data) {
@@ -420,6 +473,7 @@ export default {
         // 点击确定data
         // 判断是删除房间还是删除设备
         var params = {
+          communityId: window.sessionStorage.getItem('communityId'),
           contractNumber: data.contractNumber
         }
         this.loading = true
@@ -431,9 +485,31 @@ export default {
           } else {
             this.$message.error(result.msg)
           }
+        }).catch(_ => {
+          this.loading = false
         })
       }).catch(() => {
         // 点击取消
+      })
+    },
+
+    // 启动合同
+    updataStart: function(data) {
+      var params = {
+        communityId: window.sessionStorage.getItem('communityId'),
+        contractNumber: data.contractNumber
+      }
+      this.loading = true
+      updataStart(params).then(result => {
+        this.loading = false
+        if (result.msg === 'success') {
+          this.$message.success('启动成功')
+          this.getList()
+        } else {
+          this.$message.error(result.msg)
+        }
+      }).catch(_ => {
+        this.loading = false
       })
     }
 
@@ -448,7 +524,6 @@ export default {
   }
 
   .condition{
-    display: flex;
     .el-input{
       width: 250px;
     }

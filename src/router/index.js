@@ -19,36 +19,59 @@ import Layout from '../views/layout/Layout'
   }
 **/
 export const constantRouterMap = [
-  { path: '/', component: () => import('@/views/login/index'), hidden: true },
+  { path: '/', component: () => import('@/views/login/index'), hidden: true, meta: { noNeedAuth: true }},
   { path: '/404', component: () => import('@/views/404'), hidden: true },
 
+  // {
+  //   path: '/dashboard',
+  //   component: Layout,
+  //   redirect: '/dashboard/index',
+  //   children: [{
+  //     path: 'index',
+  //     name: 'Dashboard',
+  //     component: () => import('@/views/dashboard/index'),
+  //     meta: { title: '首页', icon: 'dashboard' }
+  //   }]
+  // },
   {
-    path: '/dashboard',
+    path: '/superAdmin',
     component: Layout,
-    redirect: '/dashboard/index',
-    children: [{
-      path: 'index',
-      name: 'Dashboard',
-      component: () => import('@/views/dashboard/index'),
-      meta: { title: '首页', icon: 'dashboard' }
-    }]
+    redirect: '/superAdmin/communityManage',
+    meta: { title: '超级管理员', icon: 'user' },
+    children: [
+      {
+        path: 'communityManage',
+        name: 'CommunityManage',
+        component: () => import('@/views/superAdmin/communityManage'),
+        meta: { title: '社区管理' }
+      },
+      {
+        path: 'userManage',
+        name: 'UserManage',
+        component: () => import('@/views/superAdmin/userManage'),
+        meta: { title: '账户管理' }
+      }
+    ]
   },
   {
     path: '/assets',
     component: Layout,
     // redirect: '/assets/assets',
+    meta: { title: '资产管理', icon: 'assets' },
+    alwaysShow: true,
     children: [{
       path: 'index',
       name: 'Assets',
       component: () => import('@/views/assets/index'),
-      meta: { title: '资产管理', icon: 'assets' }
+      meta: { title: '资产管理' }
     }]
   },
   {
     path: '/contract',
     component: Layout,
     redirect: '/contract/index',
-    meta: { title: '合同方案', icon: 'example' },
+    meta: { title: '合同管理', icon: 'example' },
+    alwaysShow: true,
     children: [
       {
         path: 'index',
@@ -70,6 +93,19 @@ export const constantRouterMap = [
       }
     ]
   },
+  {
+    path: '/userService',
+    component: Layout,
+    redirect: '/dashboard/index',
+    meta: { title: '用户服务', icon: 'service' },
+    alwaysShow: true,
+    children: [{
+      path: 'index',
+      name: 'UserService',
+      component: () => import('@/views/userService/index'),
+      meta: { title: '用户服务' }
+    }]
+  },
 
   { path: '*', redirect: '/404', hidden: true }
 ]
@@ -79,3 +115,5 @@ export default new Router({
   scrollBehavior: () => ({ y: 0 }),
   routes: constantRouterMap
 })
+
+export const asyncRouterMap = []

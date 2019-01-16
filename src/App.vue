@@ -31,4 +31,9 @@ export default {
   .el-table__expanded-cell[class*=cell]{
     padding: 0 50px;
   }
+
+  /*.el-dialog__body{*/
+    /*min-height: 500px!important;*/
+    /*overflow: auto;*/
+  /*}*/
 </style>

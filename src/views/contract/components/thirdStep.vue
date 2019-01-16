@@ -1,34 +1,45 @@
 <template>
   <div class="thirdStepContainer">
-    <h2>房租信息</h2>
+
     <el-form ref="dataForm" :model="dataForm" label-width="100px" class="myForm">
+      <h2>合同时间</h2>
+      <el-form-item label="起止时间">
+        <el-date-picker
+          v-model="dataForm.startAndEndtime"
+          type="daterange"
+          range-separator="至"
+          start-placeholder="开始日期"
+          end-placeholder="结束日期"
+          size="medium"/>
+      </el-form-item>
+      <!--<hr>-->
+      <br>
+      <h2>房租信息</h2>
       <div v-for="(item,index) in dataForm.rentInfo" :key="index">
         <el-form-item
           :label="(index+1) + '、房间信息' ">
-          <el-select v-model="item.house" placeholder="请选择">
+          <el-select
+            v-model="item.house"
+            :remote-method="getHouses"
+            :loading="loading"
+            filterable
+            remote
+            reserve-keyword
+            placeholder="请输入房间信息"
+            @focus.prevent="selectFocus">
             <el-option
               v-for="houseItem in houseOptions"
-              :key="houseItem.value"
-              :label="houseItem.label"
-              :value="houseItem.value"
-              size="medium"/>
+              :key="houseItem.houseId"
+              :label="houseItem.assets_name"
+              :value="houseItem.houseId"/>
           </el-select>
+
           <a v-show="dataForm.rentInfo.length>1" class="remove-item" @click.prevent="removeItem(index)">
             <i class="el-icon-remove-outline" style="color: red;font-size: 16px"/>
           </a>
           <a v-show="dataForm.rentInfo.length-1 == index" class="remove-item" @click.prevent="addItem()">
             <i class="el-icon-circle-plus-outline" style="color: green;font-size: 16px"/>
           </a>
-        </el-form-item>
-
-        <el-form-item label="起止时间">
-          <el-date-picker
-            v-model="item.startAndEndtime"
-            type="daterange"
-            range-separator="至"
-            start-placeholder="开始日期"
-            end-placeholder="结束日期"
-            size="medium"/>
         </el-form-item>
 
         <el-form-item label="月租金">
@@ -51,16 +62,17 @@
         </el-form-item>
         <!--<hr :key="index">-->
       </div>
-      <hr>
+      <!--<hr>-->
+      <br>
       <h2>计费信息</h2>
       <div v-for="(item,index) in dataForm.chargingInfo" :key="index+1000">
         <el-form-item :label=" (index+1) + '、计费项目'">
-          <el-select v-model="item.chargingPrograme" placeholder="请选择">
+          <el-select v-model="item.chargingPrograme" placeholder="请选择" @change="chargingProgrameChange(index)">
             <el-option
               v-for="chargeItem in chargingOptions"
-              :key="chargeItem.value"
-              :label="chargeItem.label"
-              :value="chargeItem.value"
+              :key="chargeItem.coName"
+              :label="chargeItem.coName"
+              :value="chargeItem.coName"
               size="medium"/>
           </el-select>
           <a v-show="dataForm.chargingInfo.length>1" class="remove-item" @click.prevent="removeCharge(index)">
@@ -75,21 +87,25 @@
             v-model="item.deviceNums"
             multiple
             collapse-tags
-            placeholder="请选择">
+            placeholder="请选择"
+            @focus="getDeviceByHouse(index)">
             <el-option
-              v-for="item in deceiveNums"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"/>
+              v-for="device in deceiveNums"
+              :key="device.id"
+              :label="device.assetsCode"
+              :value="device.id"/>
           </el-select>
         </el-form-item>
         <el-form-item label="方案选择">
-          <el-select v-model="item.chargingPlan" placeholder="请选择">
+          <el-select
+            v-model="item.chargingPlan"
+            placeholder="请选择"
+            @focus="getCoTyPL(index)">
             <el-option
-              v-for="planItem in planOptions"
-              :key="planItem.value"
-              :label="planItem.label"
-              :value="planItem.value"
+              v-for="planItem in planOptions[index]"
+              :key="planItem.id"
+              :label="planItem.schemeName"
+              :value="planItem.id"
               size="medium"/>
           </el-select>
         </el-form-item>
@@ -99,15 +115,14 @@
 </template>
 
 <script>
+import {
+  getHouses,
+  listCostType,
+  getCoTyPL,
+  getHouAss } from '@/api/contract'
 export default {
   name: 'ThirdStep',
   props: {
-    houseOptions: {
-      type: Array,
-      default: function() {
-        return null
-      }
-    },
     dataForm: {
       type: Object,
       default: function() {
@@ -117,34 +132,17 @@ export default {
   },
   data() {
     return {
-      chargingOptions: [
-        {
-          label: '电费',
-          value: '电费'
-        },
-        {
-          label: '水费',
-          value: '水费'
-        }
-      ],
-      deceiveNums: [
-        {
-          label: '4728432/电表',
-          value: '1'
-        },
-        {
-          label: '4728332/电表',
-          value: '2'
-        }
-      ],
-      planOptions: [
-        {
-          label: '方案1',
-          value: '方案1'
-        }
-      ]
+      loading: false,
+      houseOptions: [],
+      chargingOptions: [],
+      deceiveNums: [],
+      planOptions: []
     }
   },
+  created() {
+    this.listCostType()
+  },
+
   methods: {
     removeItem: function(index) {
       this.dataForm.rentInfo.splice(index, 1)
@@ -162,6 +160,7 @@ export default {
 
     removeCharge: function(index) {
       this.dataForm.chargingInfo.splice(index, 1)
+      this.planOptions.splice(index, 1)
     },
 
     addCharge: function() {
@@ -169,6 +168,94 @@ export default {
         chargingPrograme: '', // 计费项目
         deviceNums: [], // 设备号
         chargingPlan: ''// 收费方案
+      })
+      // this.planOptions.push([])
+    },
+
+    // 获取房子列表
+    getHouses: function(query) {
+      if (query === '') {
+        return
+      }
+      var params = {
+        communityId: window.sessionStorage.getItem('communityId'),
+        proSeachAll: query
+      }
+      this.loading = true
+      getHouses(params).then(result => {
+        this.loading = false
+        console.log(result)
+        if (result.msg === 'success') {
+          this.houseOptions = result.houses
+        }
+      })
+    },
+
+    // 选择框聚焦的时候清空数据
+    selectFocus: function() {
+      this.houseOptions = []
+    },
+
+    // 获取收费类型
+    listCostType: function() {
+      var params = {
+        communityId: window.sessionStorage.getItem('communityId')
+      }
+      listCostType(params).then(result => {
+        if (result.msg === 'success') {
+          this.chargingOptions = result.page
+        }
+      })
+    },
+
+    // 计费项目发生改变
+    chargingProgrameChange: function(index) {
+      // 清空设备编号和方案选择
+      this.deceiveNums = []
+      this.dataForm.chargingInfo[index].deviceNums = []
+      this.planOptions = []
+      this.dataForm.chargingInfo[index].chargingPlan = ''
+    },
+
+    // 根据收费类型选择方案
+    getCoTyPL: function(index) {
+      this.dataForm.chargingInfo[index].chargingPlan = ''
+      var category = this.dataForm.chargingInfo[index].chargingPrograme
+      if (category === '') {
+        return
+      }
+      var params = {
+        communityId: window.sessionStorage.getItem('communityId'),
+        schemeCategory: category
+      }
+      getCoTyPL(params).then(result => {
+        if (result.msg === 'success') {
+          this.planOptions[index] = result.page
+          this.planOptions = [...this.planOptions]
+        }
+      })
+    },
+
+    // 根据所选房间获取绑定房间的设备
+    getDeviceByHouse: function(index) {
+      var tempHouser = []
+      this.dataForm.chargingInfo[index].deviceNums = []
+      this.dataForm.rentInfo.forEach(element => {
+        if (element.house !== '') {
+          tempHouser.push(element.house)
+        }
+      })
+
+      var params = {
+        communityId: window.sessionStorage.getItem('communityId'),
+        coType: this.dataForm.chargingInfo[index].chargingPrograme,
+        houseId: tempHouser
+      }
+      getHouAss(params).then(result => {
+        console.log(result)
+        if (result.msg === 'success') {
+          this.deceiveNums = result.page
+        }
       })
     }
   }

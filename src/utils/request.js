@@ -1,5 +1,6 @@
 import axios from 'axios'
-import { Message /* MessageBox*/ } from 'element-ui'
+import { Message, MessageBox } from 'element-ui'
+// import store from '@/store'
 // import store from '../store'
 // import { getToken } from '@/utils/auth'
 /**
@@ -11,7 +12,7 @@ import { Message /* MessageBox*/ } from 'element-ui'
 // 创建axios实例
 const service = axios.create({
   baseURL: 'http://172.0.0.9:16005/renren-api/api',
-  // baseURL: 'http://parks.worthplus.cn:16005/renren-api/api/',
+  // baseURL: 'http://parks.worthplus.cn:16005/renren-api/api',
   timeout: 10000 // 请求超时时间
 })
 
@@ -33,7 +34,21 @@ service.interceptors.request.use(
 // response 拦截器
 service.interceptors.response.use(
   response => {
-    // console.log(response.data)
+    if (response.data.code === 500) {
+      MessageBox.confirm(
+        '你已被登出，可以取消继续留在该页面，或者重新登录',
+        '确定登出',
+        {
+          confirmButtonText: '重新登录',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }
+      ).then(() => {
+        console.log('chongdeng')
+        window.sessionStorage.removeItem('token')
+        location.reload()// 没有token后，reload重新加载，会通过myPermission的限制跳回登录界面
+      })
+    }
     return response.data
     /**
      * code为非20000是抛错 可结合自己业务进行修改
