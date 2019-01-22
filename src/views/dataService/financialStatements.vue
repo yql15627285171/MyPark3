@@ -1,13 +1,23 @@
 <template>
-  <div>财务报表</div>
+  <div class="financialStatementsContainer">
+    <recharge-record/>
+  </div>
 </template>
 
 <script>
+import rechargeRecord from '@/views/userService/components/rechargeRecord'
 export default {
-  name: 'FinancialStatements'
+  name: 'FinancialStatements',
+  components: {
+    rechargeRecord
+  }
 }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
+.financialStatementsContainer{
+  height: 100%;
+  padding: 20px;
+}
 
 </style>

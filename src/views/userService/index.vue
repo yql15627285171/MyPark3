@@ -20,6 +20,20 @@
         style="width: 100%"
         @selection-change="handleSelectionChange">
 
+        <el-table-column type="expand">
+          <template slot-scope="props">
+            <el-form label-position="left" inline class="demo-table-expand" >
+              <el-form-item
+                v-for="(item,index) in messageName"
+                v-if="index<=3"
+                :label="item.label"
+                :key="index">
+                <span>{{ props.row[item.name] }}</span>
+              </el-form-item>
+            </el-form>
+          </template>
+        </el-table-column>
+
         <el-table-column
           align="center"
           type="selection"
@@ -32,6 +46,7 @@
           width="50"/>
         <el-table-column
           v-for="(item,index) in messageName"
+          v-if="index > 3"
           :key="index"
           :prop="item.name"
           :label="item.label"
@@ -102,13 +117,13 @@
     <el-dialog :visible.sync="dialogFormVisible" width="80%" title="详情">
       <el-tabs v-model="activeName">
         <el-tab-pane label="日用电量" name="first">
-          <day-data :assets-code="detailsAssetsCode"/>
+          <day-data :assets-code="detailsAssetsCode" :time="clickDetailBtnTime"/>
         </el-tab-pane>
         <el-tab-pane label="月冻结" name="second">
-          <month-data :assets-code="detailsAssetsCode"/>
+          <month-data :assets-code="detailsAssetsCode" :time="clickDetailBtnTime"/>
         </el-tab-pane>
         <el-tab-pane label="充值记录" name="third">
-          <recharge-record :assets-code="detailsAssetsCode"/>
+          <recharge-record :assets-code="detailsAssetsCode" :time="clickDetailBtnTime"/>
         </el-tab-pane>
       </el-tabs>
     </el-dialog>
@@ -149,12 +164,24 @@ export default {
       loading: false,
       messageName: [
         {
-          label: '资产名称',
-          name: 'assetsName'
+          label: '资产型号',
+          name: 'DeviceMode'
         },
         {
-          label: '资产型号',
-          name: 'deviceMode'
+          label: '计费方案',
+          name: 'schemeName'
+        },
+        {
+          label: '账户余额',
+          name: 'AccountAmount'
+        },
+        {
+          label: '表内余额',
+          name: 'DevAmount'
+        },
+        {
+          label: '资产名称',
+          name: 'assetsName'
         },
         {
           label: '资产编号',
@@ -173,12 +200,8 @@ export default {
           name: 'CurrentPower'
         },
         {
-          label: '计费方案',
-          name: 'schemeName'
-        },
-        {
           label: '剩余金额',
-          name: 'RemainMoney'
+          name: 'RemainAmount'
         },
         {
           label: '余额状态',
@@ -205,7 +228,8 @@ export default {
       chargeDialogTitle: '', // 充值退费界面的标题
       assetsInfo: '', // 充值退费的时候显示的资产信息
       assetsCode: '', // 充值的时候的资产号
-      houseInfo: ''
+      houseInfo: '',
+      clickDetailBtnTime: '' // 每次点击详情的时间（确保每次点都或进行网络请求）
     }
   },
   created() {
@@ -293,6 +317,7 @@ export default {
     // 点击详情按钮
     detailsBtnClick: function(data) {
       this.detailsAssetsCode = data.assetsCode
+      this.clickDetailBtnTime = new Date()
       this.dialogFormVisible = true
     },
 
@@ -302,8 +327,8 @@ export default {
         this.$message.warning('请选择唯一一个设备进行操作')
         return
       }
-      // this.houseInfo = this.selectionData[0].buildHouse
-      this.assetsInfo = this.selectionData[0].assetsInfo
+      this.houseInfo = this.selectionData[0].buildHouse
+      this.assetsInfo = this.selectionData[0].installAddress
       this.chargeDialogTitle = '充值'
       this.assetsCode = this.selectionData[0].assetsCode
       this.chargeDialogVisible = true

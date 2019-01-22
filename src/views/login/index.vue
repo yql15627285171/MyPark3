@@ -58,8 +58,8 @@ export default {
     }
     return {
       loginForm: {
-        username: '',
-        password: ''
+        username: 'admin',
+        password: 'admin123'
       },
       loginRules: {
         username: [{ required: true, trigger: 'blur' }],
@@ -97,7 +97,7 @@ export default {
               window.sessionStorage.setItem('userId', result.userId)
               window.sessionStorage.setItem('communityId', result.communityId)
               window.sessionStorage.setItem('communityName', result.communityName)
-              this.$router.push({ path: this.redirect || '/assets/index' })
+              this.$router.push({ path: '/assets/index' })
             } else {
               this.$message.error(result.msg)
             }

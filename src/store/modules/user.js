@@ -1,4 +1,4 @@
-import { login, logout } from '@/api/login'
+import { login, logout, getUserMenuList } from '@/api/login'
 // import { getToken, setToken, removeToken } from '@/utils/auth'
 
 const user = {
@@ -6,7 +6,8 @@ const user = {
     token: window.sessionStorage.getItem('token'),
     name: '',
     avatar: '',
-    roles: []
+    roles: [],
+    listData: []
   },
 
   mutations: {
@@ -21,6 +22,9 @@ const user = {
     },
     SET_ROLES: (state, roles) => {
       state.roles = roles
+    },
+    SET_LIST_DATA: (state, listData) => {
+      state.listData = listData
     }
   },
 
@@ -34,6 +38,18 @@ const user = {
           // setToken(data.token)
           window.sessionStorage.setItem('token', response.token)
           commit('SET_TOKEN', response.token)
+          resolve(response)
+        }).catch(error => {
+          reject(error)
+        })
+      })
+    },
+
+    // 获取用户菜单列表
+    getUserMenuList({ commit }, params) {
+      return new Promise((resolve, reject) => {
+        getUserMenuList(params).then(response => {
+          commit('SET_LIST_DATA', response.menuList)
           resolve(response)
         }).catch(error => {
           reject(error)

@@ -6,10 +6,10 @@
     width="35%"
     center>
     <el-form label-width="100px">
-      <!--<el-form-item label="房间信息">-->
-      <!--<el-input :value="houseInfo" disabled/>-->
-      <!--</el-form-item>-->
-      <el-form-item label="资产信息">
+      <el-form-item label="房间信息">
+        <el-input :value="houseInfo" disabled/>
+      </el-form-item>
+      <el-form-item label="安装地址">
         <el-input :value="assetsInfo" disabled/>
       </el-form-item>
       <el-form-item v-if="dialogTitle == '充值'" label="类型">
@@ -38,6 +38,7 @@
 
 <script>
 import { recharge } from '@/api/userService'
+import { TransformToChinese } from '@/utils/transformToChinese'
 export default {
   name: 'ChargeDialog',
   props: {
@@ -113,11 +114,11 @@ export default {
         this.$message.warning('请填写完整信息')
         return
       }
-      if (parseFloat(this.money) <= 0 || parseFloat(this.money) % 1 !== 0) {
-        this.$message.warning('金额必须是大于0的整数')
+      if (parseFloat(this.money) <= 0) {
+        this.$message.warning('金额必须是大于0')
         return
       }
-      this.$confirm(`你确定${this.dialogTitle}${this.money}元吗`, '提示', {
+      this.$confirm(`你确定${this.dialogTitle}${this.money}元吗`, `${this.houseInfo}：     ${this.dialogTitle}${TransformToChinese(this.money)}`, {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'

@@ -21,6 +21,10 @@ Vue.use(ElementUI)
 // IE对promise的支持不好
 import 'babel-polyfill'
 
+// 打印
+// import Print from '@/utils/print'
+// Vue.use(Print) // 注册
+
 Vue.config.productionTip = false
 
 new Vue({

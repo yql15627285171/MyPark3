@@ -5,8 +5,8 @@ import { asyncRouterMap, constantRouterMap } from '@/router'
 
 const permission = {
   state: {
-    routers: constantRouterMap,
-    addRouters: []
+    routers: constantRouterMap, // 显示的路由
+    addRouters: [] // 添加的路由
   },
   mutations: {
     SET_ROUTERS: (state, routers) => {
@@ -18,14 +18,18 @@ const permission = {
     GenerateRoutes({ commit }, data) {
       return new Promise(resolve => {
         const accessedRouters = []
-        for (var listItem in data) {
-          for (var routerItem in asyncRouterMap) {
-            if (listItem.name === routerItem.meta.name) {
+        for (var listIndex in data) {
+          var listItem = data[listIndex]
+          for (var routerIndex in asyncRouterMap) {
+            var routerItem = asyncRouterMap[routerIndex]
+            if (listItem.name === routerItem.meta.title) {
               const accessedChildren = []
-              for (var listChildren in listItem.lists) {
-                for (var routerChildren in routerItem.children) {
-                  if (listChildren.name === routerChildren.meta.name) {
-                    accessedChildren.push(routerChildren)
+              for (var listChildrenIndex in listItem.list) {
+                var listChildrenItem = listItem.list[listChildrenIndex]
+                for (var routerChildrenIndex in routerItem.children) {
+                  var routerChildrenItem = routerItem.children[routerChildrenIndex]
+                  if (listChildrenItem.name === routerChildrenItem.meta.title) {
+                    accessedChildren.push(routerChildrenItem)
                   }
                 }
               }
@@ -34,6 +38,11 @@ const permission = {
             }
           }
         }
+
+        var e1 = { path: '/404', component: () => import('@/views/404'), hidden: true }
+        var e2 = { path: '*', redirect: '/404', hidden: true }
+        accessedRouters.push(e1)
+        accessedRouters.push(e2)
         commit('SET_ROUTERS', accessedRouters)
         resolve()
       })

@@ -19,8 +19,7 @@ import Layout from '../views/layout/Layout'
   }
 **/
 export const constantRouterMap = [
-  { path: '/', component: () => import('@/views/login/index'), hidden: true, meta: { noNeedAuth: true }},
-  { path: '/404', component: () => import('@/views/404'), hidden: true },
+  { path: '/', component: () => import('@/views/login/index'), hidden: true, meta: { noNeedAuth: true }}
 
   // {
   //   path: '/dashboard',
@@ -33,6 +32,89 @@ export const constantRouterMap = [
   //     meta: { title: '首页', icon: 'dashboard' }
   //   }]
   // },
+  // {
+  //   path: '/superAdmin',
+  //   component: Layout,
+  //   redirect: '/superAdmin/communityManage',
+  //   meta: { title: '超级管理员', icon: 'user' },
+  //   children: [
+  //     {
+  //       path: 'communityManage',
+  //       name: 'CommunityManage',
+  //       component: () => import('@/views/superAdmin/communityManage'),
+  //       meta: { title: '社区管理' }
+  //     },
+  //     {
+  //       path: 'userManage',
+  //       name: 'UserManage',
+  //       component: () => import('@/views/superAdmin/userManage'),
+  //       meta: { title: '账户管理' }
+  //     }
+  //   ]
+  // },
+  // {
+  //   path: '/assets',
+  //   component: Layout,
+  //   redirect: '/assets/assets',
+  //   meta: { title: '资产管理', icon: 'assets' },
+  //   alwaysShow: true,
+  //   children: [{
+  //     path: 'index',
+  //     name: 'Assets',
+  //     component: () => import('@/views/assets/index'),
+  //     meta: { title: '资产管理' }
+  //   }]
+  // }
+  // {
+  //   path: '/contract',
+  //   component: Layout,
+  //   redirect: '/contract/index',
+  //   meta: { title: '合同管理', icon: 'example' },
+  //   alwaysShow: true,
+  //   children: [
+  //     {
+  //       path: 'index',
+  //       name: 'Contract',
+  //       component: () => import('@/views/contract/index'),
+  //       meta: { title: '合同管理' }
+  //     },
+  //     {
+  //       path: 'business',
+  //       name: 'Business',
+  //       component: () => import('@/views/contract/business'),
+  //       meta: { title: '商务方案' }
+  //     },
+  //     {
+  //       path: 'technical',
+  //       name: 'Technical',
+  //       component: () => import('@/views/contract/technical'),
+  //       meta: { title: '技术方案' }
+  //     }
+  //   ]
+  // },
+  // {
+  //   path: '/userService',
+  //   component: Layout,
+  //   redirect: '/dashboard/index',
+  //   meta: { title: '用户服务', icon: 'service' },
+  //   alwaysShow: true,
+  //   children: [{
+  //     path: 'index',
+  //     name: 'UserService',
+  //     component: () => import('@/views/userService/index'),
+  //     meta: { title: '用户服务' }
+  //   }]
+  // },
+
+]
+
+export default new Router({
+  // mode: 'history', //后端支持可开
+  scrollBehavior: () => ({ y: 0 }),
+  routes: constantRouterMap
+})
+
+export const asyncRouterMap = [
   {
     path: '/superAdmin',
     component: Layout,
@@ -56,7 +138,7 @@ export const constantRouterMap = [
   {
     path: '/assets',
     component: Layout,
-    // redirect: '/assets/assets',
+    redirect: '/assets/index',
     meta: { title: '资产管理', icon: 'assets' },
     alwaysShow: true,
     children: [{
@@ -106,14 +188,32 @@ export const constantRouterMap = [
       meta: { title: '用户服务' }
     }]
   },
+  {
+    path: '/dataService',
+    component: Layout,
+    redirect: '/dataService/dataSummary',
+    meta: { title: '数据服务', icon: 'form' },
+    alwaysShow: true,
+    children: [
+      {
+        path: 'dataSummary',
+        name: 'DataSummary',
+        component: () => import('@/views/dataService/dataSummary'),
+        meta: { title: '数据总览' }
+      },
+      {
+        path: 'financialStatements',
+        name: 'FinancialStatements',
+        component: () => import('@/views/dataService/financialStatements'),
+        meta: { title: '财务报表' }
+      },
+      {
+        path: 'operationRecord',
+        name: 'OperationRecord',
+        component: () => import('@/views/dataService/operationRecord'),
+        meta: { title: '操作记录' }
+      }
+    ]
+  }
 
-  { path: '*', redirect: '/404', hidden: true }
 ]
-
-export default new Router({
-  // mode: 'history', //后端支持可开
-  scrollBehavior: () => ({ y: 0 }),
-  routes: constantRouterMap
-})
-
-export const asyncRouterMap = []

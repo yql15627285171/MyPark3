@@ -13,12 +13,15 @@
         size="medium"
         placeholder="结束日期"/>
       <el-button type="primary" size="medium" @click="getRechargeRecord">查询</el-button>
+      <el-button type="primary" size="medium" @click="export2Excel">导出表格</el-button>
     </div>
+    <!--<section ref="print">-->
     <div v-loading="loading" class="tableMessage">
       <el-table
         :data="message"
         :header-cell-style="tableHeadStyle"
         :cell-style="tableRowStyle"
+        width="100%"
         stripe
         border
         style="width: 100%">
@@ -59,6 +62,14 @@
       <!--<span style="margin-right:20px">补助：{{ totalMoney.bzje }}元</span>-->
       <!--</div>-->
     </div>
+    <div style="text-align:center;font-size:16px;margin-top:20px">
+      <span style="margin-right:60px">实收：{{ totalMoney.ssje }}元</span>
+      <span style="margin-right:60px">充值：{{ totalMoney.czje }}元</span>
+      <span style="margin-right:60px">退费：{{ totalMoney.tfje }}元</span>
+      <span style="margin-right:20px">补助：{{ totalMoney.bzje }}元</span>
+    </div>
+    <!--</section>-->
+
     <div class="el-pagination">
       <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getRechargeRecord" />
     </div>
@@ -77,6 +88,10 @@ export default {
   props: {
     assetsCode: {
       type: String,
+      default: ''
+    },
+    time: {
+      type: Date,
       default: ''
     }
   },
@@ -117,12 +132,9 @@ export default {
           width: 180
         },
         {
-          label: '交易状态',
-          id: 'oprtstate'
-        },
-        {
           label: '资产编号',
-          id: 'deviceid'
+          id: 'deviceid',
+          width: 150
         },
         {
           label: '交易单号',
@@ -133,7 +145,7 @@ export default {
           id: 'otherTransactionorder'
         }
       ],
-      totalMoney: {},
+      totalMoney: {}, // 汇总金额
       total: 0, // 表格数据的总数
       listQuery: {
         page: 1,
@@ -142,7 +154,7 @@ export default {
     }
   },
   watch: {
-    assetsCode: function() {
+    time: function() {
       this.getRechargeRecord()
     }
   },
@@ -154,7 +166,7 @@ export default {
   methods: {
     // 设置表格
     tableHeadStyle: function({ row, column, rowIndex, columnIndex }) {
-      return 'background:#409EFF;color:#fff;text-align:center'
+      return 'background:#409EFF;color:#fff;text-align:center;'
     },
 
     // 表格体
@@ -177,21 +189,57 @@ export default {
         this.loading = false
         if (result.msg === 'success') {
           this.message = result.page
-          this.message.forEach(element => {
-            if (element.oprtstate === '0') {
-              element.oprtstate = '进行中'
-            } else {
-              element.oprtstate = '成功'
-            }
-          })
           this.total = result.recordes
+          this.totalMoney = result.total[0]
+          if (this.totalMoney.tfje == null) {
+            this.totalMoney.tfje = 0
+          }
+          if (this.totalMoney.bzje == null) {
+            this.totalMoney.bzje = 0
+          }
         } else {
           this.$message.error(result.msg)
         }
       }).catch(_ => {
         this.loading = false
       })
+    },
+
+    // 导出表格
+    export2Excel: function() {
+      require.ensure([], () => {
+        const { export_json_to_excel } = require('@/vendor/Export2Excel')
+        const tHeader = [
+          '栋/街/层',
+          '房间号',
+          '交易类型',
+          '交易金额',
+          '交易路径',
+          '交易方式',
+          '交易时间',
+          '资产编号',
+          '交易单号',
+          '第三方订单号']
+        const filterVal = [
+          'building',
+          'houseNo',
+          'transactiontype',
+          'transactionamount',
+          'transactionmode',
+          'transactionmethod',
+          'transactiontime',
+          'deviceid',
+          'ordercode',
+          'otherTransactionorder']
+        const list = this.message
+        const data = this.formatJson(filterVal, list)
+        export_json_to_excel(tHeader, data, '财务表格')
+      })
+    },
+    formatJson(filterVal, jsonData) {
+      return jsonData.map(v => filterVal.map(j => v[j]))
     }
+
   }
 }
 </script>
@@ -213,5 +261,11 @@ export default {
   .el-pagination{
     text-align: center;
   }
+
+  /*@media print {*/
+    /*#printMessage{*/
+      /*width: 100%!important;*/
+    /*}*/
+  /*}*/
 
 </style>

@@ -158,7 +158,6 @@
 
 <script>
 import Pagination from '@/components/Pagination'
-import { getAllMenuList } from '@/api/login'
 import {
   getPageList,
   enableDevice,
@@ -250,10 +249,6 @@ export default {
   },
   created() {
     this.getList()
-
-    getAllMenuList().then(result => {
-      console.log(result)
-    })
   },
   methods: {
     // 设置表格

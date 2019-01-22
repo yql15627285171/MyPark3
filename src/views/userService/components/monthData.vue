@@ -68,6 +68,10 @@ export default {
     assetsCode: {
       type: String,
       default: ''
+    },
+    time: {
+      type: Date,
+      default: ''
     }
   },
   data() {
@@ -155,13 +159,12 @@ export default {
   },
 
   watch: {
-    assetsCode: function() {
+    time: function() {
       this.getMonthReport()
     }
   },
 
   created() {
-    console.log(this.assetsCode)
     this.getMonthReport()
   },
   methods: {

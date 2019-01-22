@@ -17,11 +17,12 @@ export function login(username, password) {
   })
 }
 
-// 获取所有的菜单（暂时）
-export function getAllMenuList() {
+// 获取对应用户的菜单（暂时）
+export function getUserMenuList(query) {
   return request({
-    url: '/menu/getAllMenuList',
-    method: 'get'
+    url: '/menu/getUserMenuList',
+    method: 'get',
+    params: query
   })
 }
 
