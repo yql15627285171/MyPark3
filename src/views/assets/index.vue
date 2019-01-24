@@ -6,6 +6,13 @@
         placeholder="资产编号"
         prefix-icon="el-icon-search"
         size="medium"/>
+      <el-select v-model="assetsClass" clearable placeholder="资产类别" size="medium">
+        <el-option
+          v-for="item in assetsClassInfo"
+          :key="item.assetsClass"
+          :label="item.assetsClass"
+          :value="item.assetsClass"/>
+      </el-select>
       <el-button type="primary" size="medium" icon="el-icon-search" @click="getList">查询</el-button>
       <el-button type="primary" size="medium" icon="el-icon-edit" @click="addDeviceBtnClick">安装设备</el-button>
       <el-button type="primary" size="medium" icon="el-icon-edit" @click="addHouseBtnClick">新增楼房</el-button>
@@ -85,10 +92,10 @@
         <el-form-item label="房间号" prop="houseNo" >
           <el-input v-model="houseDataForm.houseNo" size="medium" placeholder="请输入"/>
         </el-form-item>
-        <el-form-item label="倍率" prop="ratio" >
+        <el-form-item label="倍率(CT)" prop="ratio" >
           <el-input v-model="houseDataForm.ratio" size="medium" placeholder="请输入"/>
         </el-form-item>
-        <el-form-item label="建筑面积" prop="coveredArea">
+        <el-form-item label="建筑面积(㎡)" prop="coveredArea">
           <el-input v-model="houseDataForm.coveredArea" size="medium" placeholder="请输入"/>
         </el-form-item>
         <el-form-item label="备注" prop="remark" >
@@ -112,8 +119,9 @@
         style="width: 100%">
 
         <el-table-column
-          label="序号"
+          :index="sortIndex"
           type="index"
+          label="序号"
           width="50"/>
 
         <el-table-column
@@ -168,7 +176,8 @@ import {
   deleteMeterInfo,
   deleteMHInfo,
   updateMH,
-  updateMeterInfo
+  updateMeterInfo,
+  ListAssetsClass
 } from '@/api/assets'
 import { getDeviceType, getStatus, getStatusNumber } from '@/utils/meaning'
 export default {
@@ -178,6 +187,8 @@ export default {
     return {
       loading: false,
       queryName: '',
+      assetsClassInfo: [], // 资产类型
+      assetsClass: '', // 要查询的资产类型
       total: 0, // 表格数据的总数
       listQuery: {
         page: 1,
@@ -196,18 +207,22 @@ export default {
         {
           label: '资产型号',
           name: 'deviceMode'
+          // width: '180'
         },
         {
           label: '资产编号',
           name: 'assetsCode'
+          // width: '150'
         },
         {
           label: '资产信息',
-          name: 'assetsInfo'
+          name: 'assetsInfo',
+          width: '280'
         },
         {
           label: '状态',
-          name: 'runStatus'
+          name: 'runStatus',
+          width: '80'
         },
         {
           label: '备注',
@@ -249,8 +264,13 @@ export default {
   },
   created() {
     this.getList()
+    this.ListAssetsClass()
   },
   methods: {
+
+    sortIndex: function(index) {
+      return (this.listQuery.page - 1) * this.listQuery.limit + index + 1
+    },
     // 设置表格
     tableHeadStyle: function({ row, column, rowIndex, columnIndex }) {
       return 'background:#409EFF;color:#fff;text-align:center'
@@ -296,6 +316,7 @@ export default {
       var params = {
         userId: window.sessionStorage.getItem('userId'),
         assetsCode: this.queryName,
+        assetsClass: this.assetsClass,
         pageIndex: this.listQuery.page,
         pageSize: this.listQuery.limit
       }
@@ -317,6 +338,16 @@ export default {
       }).catch(_ => {
         this.loading = false
         // console.log(error)
+      })
+    },
+
+    // 获取资产类型
+    ListAssetsClass: function() {
+      var params = {
+        communityId: window.sessionStorage.getItem('communityId')
+      }
+      ListAssetsClass(params).then(result => {
+        this.assetsClassInfo = result.page
       })
     },
 
@@ -603,10 +634,11 @@ export default {
 }
 
 .el-input {
-  width: 300px;
+  width: 250px;
 }
 
 .el-select {
-  width: 300px;
+  width: 140px;
+  margin-left: 20px;
 }
 </style>

@@ -42,6 +42,7 @@
         </el-table-column>
 
         <el-table-column
+          :index="sortIndex"
           type="index"
           label="序号"
           width="50"/>
@@ -55,12 +56,6 @@
           :width="item.width"/>
 
       </el-table>
-      <!--<div style="text-align:center;font-size:16px;margin-top:20px">-->
-      <!--<span style="margin-right:60px">实收：{{ totalMoney.ssje }}元</span>-->
-      <!--<span style="margin-right:60px">充值/开户：{{ totalMoney.czje }}元</span>-->
-      <!--<span style="margin-right:60px">退费：{{ totalMoney.tfje }}元</span>-->
-      <!--<span style="margin-right:20px">补助：{{ totalMoney.bzje }}元</span>-->
-      <!--</div>-->
     </div>
     <div style="text-align:center;font-size:16px;margin-top:20px">
       <span style="margin-right:60px">实收：{{ totalMoney.ssje }}元</span>
@@ -145,7 +140,12 @@ export default {
           id: 'otherTransactionorder'
         }
       ],
-      totalMoney: {}, // 汇总金额
+      totalMoney: {
+        tfje: '',
+        czje: '',
+        ssje: '',
+        bzje: ''
+      }, // 汇总金额
       total: 0, // 表格数据的总数
       listQuery: {
         page: 1,
@@ -174,6 +174,11 @@ export default {
       return 'text-align:center;padding:2px;'
     },
 
+    // 排序
+    sortIndex: function(index) {
+      return (this.listQuery.page - 1) * this.listQuery.limit + index + 1
+    },
+
     getRechargeRecord: function() {
       this.message = []
       var params = {
@@ -190,11 +195,18 @@ export default {
         if (result.msg === 'success') {
           this.message = result.page
           this.total = result.recordes
-          this.totalMoney = result.total[0]
-          if (this.totalMoney.tfje == null) {
+          if (result.total.length !== 0) {
+            this.totalMoney = result.total[0]
+            if (this.totalMoney.tfje == null) {
+              this.totalMoney.tfje = 0
+            }
+            if (this.totalMoney.bzje == null) {
+              this.totalMoney.bzje = 0
+            }
+          } else {
+            this.totalMoney.czje = 0
+            this.totalMoney.ssje = 0
             this.totalMoney.tfje = 0
-          }
-          if (this.totalMoney.bzje == null) {
             this.totalMoney.bzje = 0
           }
         } else {

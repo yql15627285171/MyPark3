@@ -19,6 +19,7 @@
         border
         style="width: 100%">
         <el-table-column
+          :index="sortIndex"
           type="index"
           label="序号"
           width="50"/>
@@ -198,6 +199,9 @@ export default {
     this.getCommunityList()
   },
   methods: {
+    sortIndex: function(index) {
+      return (this.listQuery.page - 1) * this.listQuery.limit + index + 1
+    },
     // 设置表格
     tableHeadStyle: function({ row, column, rowIndex, columnIndex }) {
       return 'background:#409EFF;color:#fff;text-align:center'

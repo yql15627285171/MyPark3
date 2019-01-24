@@ -23,6 +23,7 @@
         style="width: 100%">
 
         <el-table-column
+          :index="sortIndex"
           label="序号"
           type="index"
           width="50"/>
@@ -341,6 +342,10 @@ export default {
       //   return 'padding:3px;'
       // }
       return 'text-align:center;padding:3px;'
+    },
+    // 排序
+    sortIndex: function(index) {
+      return (this.listQuery.page - 1) * this.listQuery.limit + index + 1
     },
 
     /* 增加表单项*/

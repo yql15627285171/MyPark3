@@ -33,6 +33,7 @@
         </el-table-column>
 
         <el-table-column
+          :index="sortIndex"
           label="序号"
           type="index"
           width="50"/>
@@ -237,6 +238,10 @@ export default {
     // 表格体
     tableRowStyle: function({ row, column, rowIndex, columnIndex }) {
       return 'text-align:center;padding:3px;'
+    },
+    // 排序
+    sortIndex: function(index) {
+      return (this.listQuery.page - 1) * this.listQuery.limit + index + 1
     },
 
     // 添加按钮被点击

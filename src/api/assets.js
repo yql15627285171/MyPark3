@@ -12,6 +12,17 @@ export function getPageList(query) {
 }
 
 /**
+ * 获取资产类型
+ */
+export function ListAssetsClass(query) {
+  return request({
+    url: '/meterInfo/ListAssetsClass',
+    method: 'get',
+    params: query
+  })
+}
+
+/**
  * 添加房间
  */
 export function postCommHouseInfo(query) {

@@ -32,6 +32,9 @@ export default {
     padding: 0 50px;
   }
 
+  .el-dialog{
+    min-width: 500px!important;
+  }
   /*.el-dialog__body{*/
     /*min-height: 500px!important;*/
     /*overflow: auto;*/

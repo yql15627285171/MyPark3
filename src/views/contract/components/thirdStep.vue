@@ -58,7 +58,6 @@
 
         <el-form-item label="递增比例">
           <el-input v-model="item.rate" size="medium" placeholder="月租金"/>
-          <span>（%）</span>
         </el-form-item>
         <!--<hr :key="index">-->
       </div>

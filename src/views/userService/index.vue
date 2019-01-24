@@ -6,6 +6,13 @@
         placeholder="合同号/手机/房间/资产"
         prefix-icon="el-icon-search"
         size="medium"/>
+      <el-select v-model="runStatus" clearable placeholder="阀控状态" size="medium">
+        <el-option
+          v-for="item in runStatusList"
+          :key="item"
+          :label="item"
+          :value="item"/>
+      </el-select>
       <el-button type="primary" size="medium" icon="el-icon-search" @click="getMeterStateList">查询</el-button>
       <el-button type="primary" size="medium" icon="el-icon-plus" @click="chargeBtnCharge">充值</el-button>
       <el-button type="warning" size="medium" icon="el-icon-minus">退费</el-button>
@@ -40,6 +47,7 @@
           width="55"/>
 
         <el-table-column
+          :index="sortIndex"
           align="center"
           label="序号"
           type="index"
@@ -158,6 +166,8 @@ export default {
   data() {
     return {
       queryName: '',
+      runStatus: '', // 查询的运行状态
+      runStatusList: ['合闸', '跳闸', '保电'], // 运行状态列表
       dialogFormVisible: false,
       activeName: 'first',
       message: [],
@@ -244,6 +254,10 @@ export default {
     tableRowStyle: function({ row, column, rowIndex, columnIndex }) {
       return 'padding:3px'
     },
+    // 排序
+    sortIndex: function(index) {
+      return (this.listQuery.page - 1) * this.listQuery.limit + index + 1
+    },
 
     // 选择对应的表格行
     handleSelectionChange: function(val) {
@@ -255,6 +269,7 @@ export default {
       var params = {
         userId: window.sessionStorage.getItem('userId'),
         atillseach: this.queryName,
+        runStatus: this.runStatus,
         pageIndex: this.listQuery.page,
         pageSize: this.listQuery.limit
       }
@@ -353,6 +368,10 @@ export default {
   }
   .el-button{
     margin-left: 20px;
+  }
+  .el-select{
+    margin-left: 20px;
+    width: 140px;
   }
 }
 
