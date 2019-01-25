@@ -36,8 +36,8 @@ service.interceptors.response.use(
   response => {
     if (response.data.code === 500) {
       MessageBox.confirm(
-        '你已被登出，可以取消继续留在该页面，或者重新登录',
-        '确定登出',
+        '你的账号已被别人登录，请重新登录',
+        '确定退出',
         {
           confirmButtonText: '重新登录',
           cancelButtonText: '取消',

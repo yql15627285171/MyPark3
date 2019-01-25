@@ -1,6 +1,6 @@
 <template>
   <div class="financialStatementsContainer">
-    <recharge-record/>
+    <recharge-record :time="time"/>
   </div>
 </template>
 
@@ -10,6 +10,11 @@ export default {
   name: 'FinancialStatements',
   components: {
     rechargeRecord
+  },
+  data() {
+    return {
+      time: new Date()
+    }
   }
 }
 </script>

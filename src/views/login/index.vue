@@ -97,6 +97,7 @@ export default {
               window.sessionStorage.setItem('userId', result.userId)
               window.sessionStorage.setItem('communityId', result.communityId)
               window.sessionStorage.setItem('communityName', result.communityName)
+              window.sessionStorage.setItem('username', this.loginForm.username.trim())
               this.$router.push({ path: '/assets/index' })
             } else {
               this.$message.error(result.msg)

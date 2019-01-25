@@ -307,25 +307,42 @@ export default {
         this.$message.error('超时')
       })
     },
-    // 拉合闸 保电取保
+    // 1拉闸 2合闸 3保电 4取保
     ctrlEMRelayStatus: function(data, index) {
-      var params = {
-        userId: window.sessionStorage.getItem('userId'),
-        DeviceId: data.assetsCode,
-        CtrlType: index
+      var operation = ''
+      if (index === 1) {
+        operation = '拉闸'
+      } else if (index === 2) {
+        operation = '合闸'
+      } else if (index === 5) {
+        operation = '保电'
+      } else if (index === 6) {
+        operation = '取保'
       }
-
-      this.loading = true
-      ctrlEMRelayStatus(params).then(result => {
-        this.loading = false
-        if (result.msg === 'success') {
-          this.$message.success('操作成功')
-          this.getMeterStateList()
-        } else {
-          this.$message.error(result.msg)
+      this.$confirm(`你确定要进行${operation}吗`, `提示`, {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        var params = {
+          userId: window.sessionStorage.getItem('userId'),
+          DeviceId: data.assetsCode,
+          CtrlType: index
         }
-      }).catch(_ => {
-        this.loading = false
+        this.loading = true
+        ctrlEMRelayStatus(params).then(result => {
+          this.loading = false
+          if (result.msg === 'success') {
+            this.$message.success('操作成功')
+            this.getMeterStateList()
+          } else {
+            this.$message.error(result.msg)
+          }
+        }).catch(_ => {
+          this.loading = false
+        })
+      }).catch(() => {
+        // 点击取消
       })
     },
 

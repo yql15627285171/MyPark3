@@ -16,9 +16,7 @@ router.beforeEach((to, from, next) => {
         userId: 1
       }
       store.dispatch('getUserMenuList', params).then(result => {
-        console.log('getUserMenuList')
         store.dispatch('GenerateRoutes', store.getters.listData).then(() => {
-          console.log(store.getters.addRouters)
           router.addRoutes(store.getters.addRouters)
           next({ ...to, replace: true })// hack方法 确保addRoutes已完成
         })
