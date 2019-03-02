@@ -1,10 +1,10 @@
 <template>
   <div class="dataSummaryContainer">
     <el-tabs v-model="activeName">
-      <el-tab-pane label="日用电量" name="first">
+      <el-tab-pane label="日用电信息" name="first">
         <day-data :time="time"/>
       </el-tab-pane>
-      <el-tab-pane label="月冻结" name="second">
+      <el-tab-pane label="月用电信息" name="second">
         <month-data :time="time"/>
       </el-tab-pane>
     </el-tabs>

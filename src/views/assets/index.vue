@@ -122,10 +122,11 @@
           :index="sortIndex"
           type="index"
           label="序号"
-          width="50"/>
+          width="70"/>
 
         <el-table-column
           v-for="(item,index) in messageName"
+          :sortable="item.sortable"
           :key="index"
           :prop="item.name"
           :label="item.label"
@@ -198,7 +199,9 @@ export default {
       messageName: [
         {
           label: '资产类别',
-          name: 'assetsClass'
+          name: 'assetsClass',
+          sortable: true,
+          width: 120
         },
         {
           label: '资产名称',

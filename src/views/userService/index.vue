@@ -51,7 +51,7 @@
           align="center"
           label="序号"
           type="index"
-          width="50"/>
+          width="70"/>
         <el-table-column
           v-for="(item,index) in messageName"
           v-if="index > 3"
@@ -59,6 +59,7 @@
           :prop="item.name"
           :label="item.label"
           :width="item.width"
+          :sortable="item.sortable"
           align="center"/>
 
         <el-table-column
@@ -124,10 +125,10 @@
 
     <el-dialog :visible.sync="dialogFormVisible" width="80%" title="详情">
       <el-tabs v-model="activeName">
-        <el-tab-pane label="日用电量" name="first">
+        <el-tab-pane label="日用电信息" name="first">
           <day-data :assets-code="detailsAssetsCode" :time="clickDetailBtnTime"/>
         </el-tab-pane>
-        <el-tab-pane label="月冻结" name="second">
+        <el-tab-pane label="月用电信息" name="second">
           <month-data :assets-code="detailsAssetsCode" :time="clickDetailBtnTime"/>
         </el-tab-pane>
         <el-tab-pane label="充值记录" name="third">
@@ -215,11 +216,15 @@ export default {
         },
         {
           label: '余额状态',
-          name: 'BalanceState'
+          name: 'BalanceState',
+          sortable: true,
+          width: 120
         },
         {
           label: '阀控状态',
-          name: 'RunStatus'
+          name: 'RunStatus',
+          sortable: true,
+          width: 120
         },
         {
           label: '抄读时间',

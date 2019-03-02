@@ -26,7 +26,7 @@
           :index="sortIndex"
           label="序号"
           type="index"
-          width="50"/>
+          width="70"/>
 
         <el-table-column
           prop="schemeCategory"
@@ -81,14 +81,14 @@
           </el-radio-group>
         </el-form-item>
 
-        <el-form-item label="费用(月)" prop="programme" >
+        <el-form-item label="费用(月)" prop="listItem" >
           <el-input v-model="monthDataForm.programme" size="medium" placeholder="请输入费用"/>
         </el-form-item>
 
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="monthDialogVisible = false">取消</el-button>
-        <el-button type="primary" @click="saveCost(monthDataForm)">确认</el-button>
+        <el-button type="primary" @click="saveCost(monthDataForm,1)">确认</el-button>
       </div>
     </el-dialog>
     <!--单费率-->
@@ -107,14 +107,14 @@
           </el-radio-group>
         </el-form-item>
 
-        <el-form-item label="单价" prop="programme" >
+        <el-form-item label="单价" prop="listItem" >
           <el-input v-model="simpleDataForm.programme" size="medium" placeholder="请输入费用"/>
         </el-form-item>
 
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="simpleDialogVisible = false">取消</el-button>
-        <el-button type="primary" @click="saveCost(simpleDataForm)">确认</el-button>
+        <el-button type="primary" @click="saveCost(simpleDataForm,2)">确认</el-button>
       </div>
     </el-dialog>
     <!--阶梯费率-->
@@ -134,7 +134,7 @@
         </el-form-item>
 
         <el-form-item
-          v-for="(item,index) in complexDataForm.programme"
+          v-for="(item,index) in complexDataForm.listItem"
           :label=" '阶梯' + (index + 1) "
           :key="index">
           <el-input v-model="item.value1" size="medium" placeholder="阶梯量" style="width: 100px!important;"/>
@@ -142,10 +142,10 @@
           <el-input v-model="item.value2" size="medium" placeholder="阶梯量" style="width: 100px!important;"/>
           <el-input v-model="item.price" size="medium" placeholder="价格" style="width: 100px!important;"/>
           <span>元</span>
-          <a v-show="complexDataForm.programme.length>1" class="remove-item" @click.prevent="removeItem(index)">
+          <a v-show="complexDataForm.listItem.length>1" class="remove-item" @click.prevent="removeItem(index)">
             <i class="el-icon-remove-outline" style="color: red;font-size: 16px"/>
           </a>
-          <a v-show="complexDataForm.programme.length-1 == index" class="remove-item" @click.prevent="addItem()">
+          <a v-show="complexDataForm.listItem.length-1 == index" class="remove-item" @click.prevent="addItem()">
             <i class="el-icon-circle-plus-outline" style="color: green;font-size: 16px"/>
           </a>
         </el-form-item>
@@ -153,7 +153,7 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button >取消</el-button>
-        <el-button type="primary" @click="saveCost(complexDataForm)">确认</el-button>
+        <el-button type="primary" @click="saveCost(complexDataForm,3)">确认</el-button>
       </div>
     </el-dialog>
     <!--时间阶梯-->
@@ -184,7 +184,7 @@
         </el-form-item>
 
         <el-form-item
-          v-for="(item,index) in timeDataForm.programme"
+          v-for="(item,index) in timeDataForm.listItem"
           :label=" '时间' + (index + 1) "
           :key="index">
           <el-time-picker
@@ -205,10 +205,10 @@
               :label="priceType.label"
               :value="priceType.value"/>
           </el-select>
-          <a v-show="timeDataForm.programme.length>1" class="remove-item" @click.prevent="removeTime(index)">
+          <a v-show="timeDataForm.listItem.length>1" class="remove-item" @click.prevent="removeTime(index)">
             <i class="el-icon-remove-outline" style="color: red;font-size: 16px"/>
           </a>
-          <a v-show="timeDataForm.programme.length-1 == index" class="remove-item" @click.prevent="addTime()">
+          <a v-show="timeDataForm.listItem.length-1 == index" class="remove-item" @click.prevent="addTime()">
             <i class="el-icon-circle-plus-outline" style="color: green;font-size: 16px"/>
           </a>
         </el-form-item>
@@ -216,7 +216,7 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button >取消</el-button>
-        <el-button type="primary" @click="saveCost(timeDataForm)">确认</el-button>
+        <el-button type="primary" @click="saveCost(timeDataForm,4)">确认</el-button>
       </div>
     </el-dialog>
   </div>
@@ -279,7 +279,8 @@ export default {
         communityId: window.sessionStorage.getItem('communityId'),
         schemeName: '', // 名
         schemeCategory: '', // 类别
-        programme: [
+        programme: '',
+        listItem: [
           {
             value1: '',
             value2: '',
@@ -296,7 +297,8 @@ export default {
         price2: '', // 峰
         price3: '', // 平
         price4: '', // 谷
-        programme: [
+        programme: '',
+        listItem: [
           {
             value: '',
             startTime: new Date(),
@@ -350,7 +352,7 @@ export default {
 
     /* 增加表单项*/
     addItem() {
-      this.complexDataForm.programme.push({
+      this.complexDataForm.listItem.push({
         value1: '',
         value2: '',
         price: ''
@@ -359,12 +361,12 @@ export default {
 
     /* 删除表单项*/
     removeItem(index) {
-      this.complexDataForm.programme.splice(index, 1)
+      this.complexDataForm.listItem.splice(index, 1)
     },
 
     // 增加时间段表单
     addTime() {
-      this.timeDataForm.programme.push({
+      this.timeDataForm.listItem.push({
         value: '',
         startTime: new Date(),
         endTime: new Date()
@@ -373,7 +375,7 @@ export default {
 
     // 删除时间段表单项
     removeTime(index) {
-      this.timeDataForm.programme.splice(index, 1)
+      this.timeDataForm.listItem.splice(index, 1)
     },
 
     // 月结定值方案
@@ -391,31 +393,44 @@ export default {
     // 阶梯费率方案
     complexBtnClick: function() {
       this.operationType = '阶梯'
+      this.complexDataForm.listItem = [{
+        value1: '',
+        value2: '',
+        price: ''
+      }]
       this.complexDialogVisible = true
     },
 
     // 时间费率方案
     timeBtnClick: function() {
       this.operationType = '分时'
+      this.timeDataForm.listItem = [
+        {
+          value: '',
+          startTime: new Date(),
+          endTime: new Date()
+        }
+      ]
       this.timeDialogVisible = true
     },
 
     // 添加收费方案
-    saveCost: function(dataForm) {
-      console.log(dataForm)
+    saveCost: function(dataForm, index) {
       for (var key in dataForm) {
         console.log(key)
         if (dataForm[key] === '') {
-          this.$message.warning('请填写好信息')
-          return
+          if (index <= 2 || key !== 'programme') {
+            this.$message.warning('请填写好信息')
+            return
+          }
         }
       }
       var tempProgramme = ''
-      var programme = dataForm.programme
+      var listItem = dataForm.listItem
       if (this.operationType === '阶梯') {
-        for (let i = 0; i < programme.length; i++) {
-          tempProgramme = `${tempProgramme}${programme[i].value1}-${programme[i].value2} ${programme[i].price}`
-          if (i !== programme.length - 1) {
+        for (let i = 0; i < listItem.length; i++) {
+          tempProgramme = `${tempProgramme}${listItem[i].value1}-${listItem[i].value2} ${listItem[i].price}`
+          if (i !== listItem.length - 1) {
             tempProgramme = tempProgramme + '<br/>'
           }
         }
@@ -423,9 +438,9 @@ export default {
       } else if (this.operationType === '分时') {
         tempProgramme = '尖' + this.timeDataForm.price1 + ' ' + '峰' + this.timeDataForm.price2 + '<br/>' +
           '平' + this.timeDataForm.price3 + ' ' + '谷' + this.timeDataForm.price4 + '<br/><br/>'
-        for (let i = 0; i < programme.length; i++) {
-          tempProgramme = `${tempProgramme}${hourAndMinute(programme[i].startTime)}-${hourAndMinute(programme[i].endTime)} ${programme[i].value}`
-          if (i !== programme.length - 1) {
+        for (let i = 0; i < listItem.length; i++) {
+          tempProgramme = `${tempProgramme}${hourAndMinute(listItem[i].startTime)}-${hourAndMinute(listItem[i].endTime)} ${listItem[i].value}`
+          if (i !== listItem.length - 1) {
             tempProgramme = tempProgramme + '<br/>'
           }
         }

@@ -41,7 +41,7 @@
           :index="sortIndex"
           label="序号"
           type="index"
-          width="50"/>
+          width="70"/>
 
         <el-table-column
           v-for="(item,index) in messageName"
@@ -242,6 +242,7 @@ export default {
       }, // 乙方
       dataForm3: {
         id: '', // 合同id
+        mob: '', // 乙方电话号码
         startAndEndtime: [], // 起止时间
         rentInfo: [
           {
@@ -331,6 +332,7 @@ export default {
         }
         this.dataForm3 = {
           id: '', // 合同id
+          mob: data.contactInformationYi,
           startAndEndtime: [], // 起止时间
           rentInfo: [
             {
@@ -443,6 +445,7 @@ export default {
 
       savePLCYi(this.dataForm2).then(result => {
         if (result.msg === 'success') {
+          this.dataForm3.mob = this.dataForm2.contactInformationYi
           this.active++
         } else {
           this.$message.error(result.msg)
@@ -454,6 +457,7 @@ export default {
     saveRentlInt: function() {
       var params = {
         proId: this.dataForm2.id,
+        mob: this.dataForm3.mob,
         startTime: yearAndMonthAndDay(this.dataForm3.startAndEndtime[0]),
         endTime: yearAndMonthAndDay(this.dataForm3.startAndEndtime[1]),
         housesInfo: this.dataForm3.rentInfo,
@@ -464,6 +468,8 @@ export default {
         if (result.msg === 'success') {
           this.$message.success('添加成功')
           this.addDialogVisible = false
+        } else {
+          this.$message.error(result.msg)
         }
       })
     },

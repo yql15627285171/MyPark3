@@ -36,7 +36,7 @@
           :index="sortIndex"
           label="序号"
           type="index"
-          width="50"/>
+          width="70"/>
 
         <el-table-column
           v-for="(item,index) in messageName"

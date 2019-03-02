@@ -33,3 +33,12 @@ export function logout(query) {
     params: query
   })
 }
+
+// 修改密码
+export function updateSysUserPassword(query) {
+  return request({
+    url: '/sysuser/updateSysUserPassword',
+    method: 'post',
+    params: query
+  })
+}

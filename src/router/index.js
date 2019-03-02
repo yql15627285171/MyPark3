@@ -19,19 +19,19 @@ import Layout from '../views/layout/Layout'
   }
 **/
 export const constantRouterMap = [
-  { path: '/', component: () => import('@/views/login/index'), hidden: true, meta: { noNeedAuth: true }}
+  { path: '/', component: () => import('@/views/login/index'), hidden: true, meta: { noNeedAuth: true }},
 
-  // {
-  //   path: '/dashboard',
-  //   component: Layout,
-  //   redirect: '/dashboard/index',
-  //   children: [{
-  //     path: 'index',
-  //     name: 'Dashboard',
-  //     component: () => import('@/views/dashboard/index'),
-  //     meta: { title: '首页', icon: 'dashboard' }
-  //   }]
-  // },
+  {
+    path: '/dashboard',
+    component: Layout,
+    redirect: '/dashboard/index',
+    children: [{
+      path: 'index',
+      name: 'Dashboard',
+      component: () => import('@/views/dashboard/index'),
+      meta: { title: '首页', icon: 'dashboard' }
+    }]
+  }
   // {
   //   path: '/superAdmin',
   //   component: Layout,
@@ -181,12 +181,20 @@ export const asyncRouterMap = [
     redirect: '/dashboard/index',
     meta: { title: '用户服务', icon: 'service' },
     alwaysShow: true,
-    children: [{
-      path: 'index',
-      name: 'UserService',
-      component: () => import('@/views/userService/index'),
-      meta: { title: '用户服务' }
-    }]
+    children: [
+      {
+        path: 'index',
+        name: 'UserService',
+        component: () => import('@/views/userService/index'),
+        meta: { title: '用户服务' }
+      },
+      {
+        path: 'settings',
+        name: 'Settings',
+        component: () => import('@/views/userService/settings'),
+        meta: { title: '用电配置' }
+      }
+    ]
   },
   {
     path: '/dataService',

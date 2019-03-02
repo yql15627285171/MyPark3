@@ -8,11 +8,11 @@ import { Message, MessageBox } from 'element-ui'
  * 线上版本：http://parks.worthplus.cn:16005/renren-api/api/
  */
 
-// const token = window.sessionStorage.getItem('token')
+// const token = window.sessionStorage.getItem('token')s
 // 创建axios实例
 const service = axios.create({
   baseURL: 'http://172.0.0.9:16005/renren-api/api',
-  // baseURL: 'http://parks.worthplus.cn:16005/renren-api/api',
+  // baseURL: 'https://parks.worthplus.cn:16005/renren-api/api',
   timeout: 10000 // 请求超时时间
 })
 

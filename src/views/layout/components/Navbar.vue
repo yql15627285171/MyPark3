@@ -16,11 +16,31 @@
             </el-dropdown-item>
           </router-link>
           <el-dropdown-item divided>
+            <span style="display:block;" @click="dialogFormVisible = true">修改密码</span>
+          </el-dropdown-item>
+          <el-dropdown-item>
             <span style="display:block;" @click="logout">退出登录</span>
           </el-dropdown-item>
+
         </el-dropdown-menu>
       </el-dropdown>
     </div>
+
+    <el-dialog :visible.sync="dialogFormVisible" title="修改密码">
+      <el-form :model="form">
+        <el-form-item :label-width="formLabelWidth" label="旧密码">
+          <el-input v-model="form.password" type="password" autocomplete="off"/>
+        </el-form-item>
+
+        <el-form-item :label-width="formLabelWidth" label="新密码">
+          <el-input v-model="form.newPassword" type="password" autocomplete="off"/>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisible = false">取 消</el-button>
+        <el-button type="primary" @click="sureChangePsd">确 定</el-button>
+      </div>
+    </el-dialog>
 
   </el-menu>
 </template>
@@ -29,7 +49,7 @@
 import { mapGetters } from 'vuex'
 import Breadcrumb from '@/components/Breadcrumb'
 import Hamburger from '@/components/Hamburger'
-
+import { updateSysUserPassword } from '@/api/login'
 export default {
   components: {
     Breadcrumb,
@@ -37,7 +57,13 @@ export default {
   },
   data() {
     return {
-      userName: window.sessionStorage.getItem('communityName')
+      userName: window.sessionStorage.getItem('communityName'),
+      dialogFormVisible: false,
+      form: {
+        password: '',
+        newPassword: ''
+      },
+      formLabelWidth: '120px'
     }
   },
   computed: {
@@ -54,6 +80,21 @@ export default {
       // this.$router.push('/')
       this.$store.dispatch('LogOut').then(() => {
         location.reload() // 为了重新实例化vue-router对象 避免bug
+      })
+    },
+    sureChangePsd() {
+      var params = {
+        userId: window.sessionStorage.getItem('userId'),
+        password: this.form.password,
+        newPassword: this.form.newPassword
+      }
+      updateSysUserPassword(params).then(result => {
+        if (result.msg === 'success') {
+          this.$message.success('修改成功')
+          this.dialogFormVisible = false
+        } else {
+          this.$message.error(result.msg)
+        }
       })
     }
   }
@@ -114,6 +155,10 @@ export default {
       }
     }
   }
+  .el-input{
+    width: 300px;
+  }
 }
+
 </style>
 

@@ -14,9 +14,8 @@
         type="date"
         size="medium"
         placeholder="结束日期"/>
-
       <el-button type="primary" size="medium" @click="getDayPageList">查询</el-button>
-
+      <el-button type="primary" size="medium" @click="export2Excel">导出表格</el-button>
     </div>
     <div v-loading="loading" class="tableMessage">
       <el-table
@@ -30,7 +29,7 @@
         <el-table-column type="expand" width="30">
           <template slot-scope="props">
             <el-form label-position="left" inline class="demo-table-expand" >
-              <el-form-item v-for="(item,index) in messageName" v-if="index > 6" :key="index" :label="item.label" >
+              <el-form-item v-for="(item,index) in messageName" v-if="index > 7" :key="index" :label="item.label" >
                 <span>{{ props.row[item.id] }}</span>
               </el-form-item>
 
@@ -42,11 +41,11 @@
           :index="sortIndex"
           type="index"
           label="序号"
-          width="50"/>
+          width="70"/>
 
         <el-table-column
           v-for="(item,index) in messageName"
-          v-if="index <= 6"
+          v-if="index <= 7"
           :key="index"
           :label="item.label"
           :prop="item.id"/>
@@ -82,7 +81,7 @@ export default {
   data() {
     return {
       loading: false,
-      startDate: new Date().setTime(new Date().getTime() - 3600 * 1000 * 24 * 30),
+      startDate: new Date().setTime(new Date().getTime() - 3600 * 1000 * 24),
       endDate: new Date(),
       total: 0, // 表格数据的总数
       listQuery: {
@@ -102,6 +101,10 @@ export default {
         {
           label: '资产编号',
           id: 'deviceid'
+        },
+        {
+          label: '剩余金额',
+          id: 'RemainAmount'
         },
         {
           label: '表底示值_总',
@@ -208,6 +211,54 @@ export default {
       }).catch(_ => {
         this.loading = false
       })
+    },
+
+    // 导出表格
+    export2Excel: function() {
+      require.ensure([], () => {
+        const { export_json_to_excel } = require('@/vendor/Export2Excel')
+        const tHeader = [
+          '栋/街/层',
+          '房间信息',
+          '资产编号',
+          '表底示值_总',
+          '日用电量',
+          '冻结时间',
+          '用电时间',
+          '抄表时间',
+          '表底示值_尖',
+          '日用电量_尖',
+          '表底示值_峰',
+          '日用电量_峰',
+          '表底示值_平',
+          '日用电量_平',
+          '表底示值_谷',
+          '日用电量_谷']
+        const filterVal = [
+          'building',
+          'houseNo',
+          'deviceid',
+          'fp1',
+          'p',
+          'settlementdate1',
+          'date',
+          'readdata',
+          'fp11',
+          'p1',
+          'fp12',
+          'p2',
+          'fp13',
+          'p3',
+          'fp14',
+          'p4'
+        ]
+        const list = this.message
+        const data = this.formatJson(filterVal, list)
+        export_json_to_excel(tHeader, data, '日用电量')
+      })
+    },
+    formatJson(filterVal, jsonData) {
+      return jsonData.map(v => filterVal.map(j => v[j]))
     }
   }
 }

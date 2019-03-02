@@ -45,7 +45,7 @@
           :index="sortIndex"
           type="index"
           label="序号"
-          width="50"/>
+          width="70"/>
 
         <el-table-column
           v-for="(item,index) in messageName"
@@ -62,7 +62,9 @@
       <span style="margin-right:60px">充值：{{ totalMoney.czje }}元</span>
       <span style="margin-right:60px">退费：{{ totalMoney.tfje }}元</span>
       <span style="margin-right:20px">补助：{{ totalMoney.bzje }}元</span>
+      <span style="margin-right:60px">(实收 = 充值 - 退费 - 补助)</span>
     </div>
+
     <!--</section>-->
 
     <div class="el-pagination">
@@ -189,6 +191,7 @@ export default {
         pageIndex: this.listQuery.page,
         pageSize: this.listQuery.limit
       }
+
       this.loading = true
       getRechargeRecord(params).then(result => {
         this.loading = false
@@ -202,6 +205,12 @@ export default {
             }
             if (this.totalMoney.bzje == null) {
               this.totalMoney.bzje = 0
+            }
+            if (this.totalMoney.bzje == null) {
+              this.totalMoney.ssje = 0
+            }
+            if (this.totalMoney.bzje == null) {
+              this.totalMoney.czje = 0
             }
           } else {
             this.totalMoney.czje = 0

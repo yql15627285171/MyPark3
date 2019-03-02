@@ -31,7 +31,7 @@
           :index="sortIndex"
           type="index"
           label="序号"
-          width="50"/>
+          width="70"/>
 
         <el-table-column
           label="登录账户"
@@ -67,7 +67,7 @@ export default {
   data() {
     return {
       loading: false,
-      dateBegin: new Date().setTime(new Date().getTime() - 3600 * 1000 * 24 * 30),
+      dateBegin: new Date().setTime(new Date().getTime() - 3600 * 1000 * 24 * 7),
       dateEnd: new Date(),
       total: 0, // 表格数据的总数
       listQuery: {
