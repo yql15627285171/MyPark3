@@ -57,23 +57,23 @@
           label="操作"
           width="200">
           <template slot-scope="scope" >
-            <el-button
-              v-if="scope.row.start == '启用'"
-              type="text"
-              size="small"
-              style="color: #409EFF">
-              <i class="el-icon-edit"/>
-              续签
-            </el-button>
-            <el-button
-              v-if="scope.row.start == '未启用'"
-              type="text"
-              size="small"
-              style="color: #409EFF"
-              @click="updataStart(scope.row)">
-              <i class="el-icon-edit"/>
-              启用
-            </el-button>
+            <!--<el-button-->
+            <!--v-if="scope.row.start == '启用'"-->
+            <!--type="text"-->
+            <!--size="small"-->
+            <!--style="color: #409EFF">-->
+            <!--<i class="el-icon-edit"/>-->
+            <!--续签-->
+            <!--</el-button>-->
+            <!--<el-button-->
+            <!--v-if="scope.row.start == '未启用'"-->
+            <!--type="text"-->
+            <!--size="small"-->
+            <!--style="color: #409EFF"-->
+            <!--@click="updataStart(scope.row)">-->
+            <!--<i class="el-icon-edit"/>-->
+            <!--启用-->
+            <!--</el-button>-->
 
             <el-button
               type="text"
@@ -94,14 +94,14 @@
               <span>删除</span>
             </el-button>
 
-            <el-button
-              v-if="scope.row.start === '启用'"
-              type="text"
-              size="small"
-              style="color: #df5000">
-              <i class="el-icon-delete"/>
-              <span>终止</span>
-            </el-button>
+            <!--<el-button-->
+            <!--v-if="scope.row.start === '启用'"-->
+            <!--type="text"-->
+            <!--size="small"-->
+            <!--style="color: #df5000">-->
+            <!--<i class="el-icon-delete"/>-->
+            <!--<span>终止</span>-->
+            <!--</el-button>-->
 
           </template>
         </el-table-column>

@@ -66,3 +66,21 @@ export function getRechargeRecord(query) {
     params: query
   })
 }
+
+// 设置结算日和报警金额
+export function uplelp(query) {
+  return request({
+    url: '/baseCommunity/uplelp',
+    method: 'get',
+    params: query
+  })
+}
+
+// 查询结算日和报警金额
+export function getlelp(query) {
+  return request({
+    url: '/baseCommunity/getlelp',
+    method: 'get',
+    params: query
+  })
+}

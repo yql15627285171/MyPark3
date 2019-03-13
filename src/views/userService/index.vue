@@ -32,7 +32,7 @@
             <el-form label-position="left" inline class="demo-table-expand" >
               <el-form-item
                 v-for="(item,index) in messageName"
-                v-if="index<=3"
+                v-if="index<=8"
                 :label="item.label"
                 :key="index">
                 <span>{{ props.row[item.name] }}</span>
@@ -54,7 +54,7 @@
           width="70"/>
         <el-table-column
           v-for="(item,index) in messageName"
-          v-if="index > 3"
+          v-if="index > 8"
           :key="index"
           :prop="item.name"
           :label="item.label"
@@ -191,6 +191,26 @@ export default {
           name: 'DevAmount'
         },
         {
+          label: '电价1',
+          name: 'RatePrice1'
+        },
+        {
+          label: '电价2',
+          name: 'RatePrice2'
+        },
+        {
+          label: '电价3',
+          name: 'RatePrice3'
+        },
+        {
+          label: '电价4',
+          name: 'RatePrice4'
+        },
+        {
+          label: '安装地址',
+          name: 'installAddress'
+        },
+        {
           label: '资产名称',
           name: 'assetsName'
         },
@@ -203,8 +223,8 @@ export default {
           name: 'buildHouse'
         },
         {
-          label: '安装地址',
-          name: 'installAddress'
+          label: '倍率',
+          name: 'ct'
         },
         {
           label: '当前用量',
